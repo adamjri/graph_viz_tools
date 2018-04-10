@@ -3,7 +3,7 @@ class Node{
     constructor(id, fields){
         this.id = id
         this.fields={}
-        if(fields.constructor===Array){
+        if(fields instanceof Array){
             for(let i=0; i<fields.length; i++){
                 this.fields[fields[i]]=null
             }
@@ -31,13 +31,13 @@ class Node{
     }
 
     setField(key, value){
-        if ('key' in myObj){
+        if (key in this.fields){
             this.fields[key]=value
         }
     }
 
     removeField(key){
-        if ('key' in myObj){
+        if (key in this.fields){
             delete this.fields[key]
         }
     }
@@ -61,7 +61,7 @@ class Edge{
         this.node2 = n2
         this.is_directed = is_directed
         this.fields={}
-        if(fields.constructor===Array){
+        if(fields instanceof Array){
             for(let i=0; i<fields.length; i++){
                 this.fields[fields[i]]=null
             }
@@ -81,13 +81,13 @@ class Edge{
     }
 
     setField(key, value){
-        if ('key' in myObj){
+        if (key in this.fields){
             this.fields[key]=value
         }
     }
 
     removeField(key){
-        if ('key' in myObj){
+        if (key in this.fields){
             delete this.fields[key]
         }
     }
@@ -118,6 +118,65 @@ class Graph{
         this.edges = [];
         this.num_nodes = 0;
         this.num_edges = 0;
+    }
+    log(){
+        if(this.is_directed){
+            console.log("Directed Graph:")
+        }
+        else{
+            console.log("Undirected Graph:")
+        }
+        console.log("Nodes:")
+        // first log node fields
+        for(let i=0; i<this.num_nodes; i++){
+            let log_str = '    '+(i+1)+') ';
+            log_str+= "id: "+this.nodes[i].getID()+", ";
+            log_str+= "fields: " + JSON.stringify(this.nodes[i].getFields());
+            console.log(log_str)
+        }
+        console.log("Adjacency Matrix:")
+        // log adjacency matrix
+        let line_sep_str = '    '
+        for(let i=0; i<this.num_nodes; i++){
+            line_sep_str+='|-----'
+        }
+        line_sep_str+="|"
+        console.log(line_sep_str)
+        for(let i=0; i<this.num_nodes; i++){
+            let log_str = '    '
+            for(let j=0; j<this.num_nodes; j++){
+                if(this.edges[i][j]===null){
+                    log_str+="|  0  "
+                }
+                else{
+                    log_str+="|  1  "
+                }
+            }
+            log_str+="|"
+            console.log(log_str)
+            console.log(line_sep_str)
+        }
+        // log each edge's fields
+        console.log("Edges:")
+        for(let i=0; i<this.num_nodes; i++){
+            let lower_bound=i
+            if(this.is_directed){
+                lower_bound=0
+            }
+            for(let j=lower_bound; j<this.num_nodes; j++){
+                if(this.edges[i][j]!==null){
+                    let log_str='    '
+                    if(this.is_directed){
+                        log_str+="("+i+" --> "+j+") "
+                    }
+                    else{
+                        log_str+="("+i+" <--> "+j+") "
+                    }
+                    log_str+= "fields: " + JSON.stringify(this.edges[i][j].getFields());
+                    console.log(log_str)
+                }
+            }
+        }
     }
 
     // node manipulations
@@ -212,14 +271,16 @@ class Graph{
                 this.addNode()
             }
         }
-        let n1 = this.nodes[id1];
-        let n2 = this.nodes[id2];
-        let e = new Edge(n1, n2, this.is_directed, fields)
-        this.edges[id1][id2] = e;
-        if(!this.is_directed){
-            this.edges[id2][id1] = e;
+        if(this.edges[id1][id2]===null){
+            let n1 = this.nodes[id1];
+            let n2 = this.nodes[id2];
+            let e = new Edge(n1, n2, this.is_directed, fields)
+            this.edges[id1][id2] = e;
+            if(!this.is_directed){
+                this.edges[id2][id1] = e;
+            }
+            this.num_edges++;
         }
-        this.num_edges++;
     }
     removeEdge(id1, id2){
         let max_ = Math.max(id1, id2);
@@ -299,7 +360,7 @@ class Graph{
     buildFromData(adjacency_matrix, is_directed){
         this.reset()
         this.is_directed = is_directed
-        num_nodes = adjacency_matrix.length
+        let num_nodes = adjacency_matrix.length
         for(let i=0; i<num_nodes; i++){
             this.addNode()
         }
@@ -318,7 +379,7 @@ class Graph{
         let min_ = Math.min(this.num_nodes, node_field_list.length)
         for(let i=0; i<min_; i++){
             let field_list = node_field_list[i];
-            if(field_list.constructor===Array){
+            if(field_list instanceof Array){
                 for(let j=0; j<field_list.length; j++){
                     this.addFieldToNode(i, field_list[j])
                 }
@@ -340,7 +401,7 @@ class Graph{
         for(let i=0; i<min_; i++){
             for(let j=0; j<min_; j++){
                 let field_list = edge_field_list[i][j];
-                if(field_list.constructor===Array){
+                if(field_list instanceof Array){
                     for(let k=0; k<field_list.length; k++){
                         this.addFieldToEdge(i, j, field_list[k])
                     }
@@ -362,7 +423,7 @@ class Graph{
         for(let i=0; i<this.num_nodes; i++){
             if(this.edges[i][id]!==null){
                 if(node_list[i]===null){
-                    node_list[i]=current_depth;
+                    node_list[i]=current_depth+1;
                 }
                 edge_list[i][id]=true;
             }
@@ -395,13 +456,15 @@ class Graph{
 
     // get ingoing k neighborhood
     getIngoingNeighborhood(id, k){
-        node_list = [];
-        edge_list = [];
+        let node_list = [];
+        let edge_list = [];
         for(let i=0; i<this.num_nodes; i++){
             node_list.push(null)
-        }
-        for(let i=0; i<this.num_nodes; i++){
-            edge_list.push(node_list)
+            let null_list = [];
+            for(let j=0; j<this.num_nodes; j++){
+                null_list.push(null)
+            }
+            edge_list.push(null_list)
         }
         node_list[id]=0
         for(let depth=0; depth<k; depth++){
@@ -411,7 +474,20 @@ class Graph{
                 }
             }
         }
-        return_dict = {
+        // at the end, check for any edges between nodes
+        // in neighborhood to complete the subgraph
+        for(let i=0; i<this.num_nodes; i++){
+            if(node_list[i]!==null){
+                for(let j=0; j<this.num_nodes; j++){
+                    if(node_list[j]!==null){
+                        if(this.edges[i][j]!==null){
+                            edge_list[i][j]=true
+                        }
+                    }
+                }
+            }
+        }
+        let return_dict = {
             "nodes": node_list,
             "edges": edge_list
         }
@@ -419,13 +495,15 @@ class Graph{
     }
     // get outgoing k neighborhood
     getOutgoingNeighborhood(id, k){
-        node_list = [];
-        edge_list = [];
+        let node_list = [];
+        let edge_list = [];
         for(let i=0; i<this.num_nodes; i++){
             node_list.push(null)
-        }
-        for(let i=0; i<this.num_nodes; i++){
-            edge_list.push(node_list)
+            let null_list = [];
+            for(let j=0; j<this.num_nodes; j++){
+                null_list.push(null)
+            }
+            edge_list.push(null_list)
         }
         node_list[id]=0
         for(let depth=0; depth<k; depth++){
@@ -435,7 +513,20 @@ class Graph{
                 }
             }
         }
-        return_dict = {
+        // at the end, check for any edges between nodes
+        // in neighborhood to complete the subgraph
+        for(let i=0; i<this.num_nodes; i++){
+            if(node_list[i]!==null){
+                for(let j=0; j<this.num_nodes; j++){
+                    if(node_list[j]!==null){
+                        if(this.edges[i][j]!==null){
+                            edge_list[i][j]=true
+                        }
+                    }
+                }
+            }
+        }
+        let return_dict = {
             "nodes": node_list,
             "edges": edge_list
         }
@@ -443,13 +534,15 @@ class Graph{
     }
     // get undirected k neighborhood
     getNeighborhood(id, k){
-        node_list = [];
-        edge_list = [];
+        let node_list = [];
+        let edge_list = [];
         for(let i=0; i<this.num_nodes; i++){
             node_list.push(null)
-        }
-        for(let i=0; i<this.num_nodes; i++){
-            edge_list.push(node_list)
+            let null_list = [];
+            for(let j=0; j<this.num_nodes; j++){
+                null_list.push(null)
+            }
+            edge_list.push(null_list)
         }
         node_list[id]=0
         for(let depth=0; depth<k; depth++){
@@ -459,7 +552,20 @@ class Graph{
                 }
             }
         }
-        return_dict = {
+        // at the end, check for any edges between nodes
+        // in neighborhood to complete the subgraph
+        for(let i=0; i<this.num_nodes; i++){
+            if(node_list[i]!==null){
+                for(let j=0; j<this.num_nodes; j++){
+                    if(node_list[j]!==null){
+                        if(this.edges[i][j]!==null){
+                            edge_list[i][j]=true
+                        }
+                    }
+                }
+            }
+        }
+        let return_dict = {
             "nodes": node_list,
             "edges": edge_list
         }
@@ -477,9 +583,9 @@ class Graph{
         // Recur for all neighbours
         // if any neighbour is visited and in 
         // recStack then graph is cyclic
-        neighborhood = this.getOutgoingNeighborhood(id, 1)
+        let neighborhood = this.getOutgoingNeighborhood(id, 1)
         for(let i=0; i<this.num_nodes; i++){
-            if(neighborhood["nodes"][i]!==null){
+            if(neighborhood["nodes"][i]!==null && neighborhood["nodes"][i]!==0){
                 if(!visited[i]){
                     if(this.isDirectedCyclicRecurse(i, visited, recStack)){
                         return true
@@ -499,15 +605,15 @@ class Graph{
 
     // Returns true if graph is directed cyclic else false
     isDirectedCyclic(){
-        visited = []
-        recStack = []
+        let visited = []
+        let recStack = []
         for(let i=0; i<this.num_nodes; i++){
             visited.push(false)
             recStack.push(false)
         }
         for(let i=0; i<this.num_nodes; i++){
             if(!visited[node]){
-                if(self.isDirectedCyclicRecurse(node,visited,recStack)){
+                if(this.isDirectedCyclicRecurse(node,visited,recStack)){
                     return true
                 }
             }
@@ -522,9 +628,9 @@ class Graph{
         visited[id]= true
  
         // Recur for all the vertices adjacent to this vertex
-        neighborhood = this.getNeighborhood(id, 1)
+        let neighborhood = this.getNeighborhood(id, 1)
         for(let i=0; i<this.num_nodes; i++){
-            if(neighborhood["nodes"][i]!==null){
+            if(neighborhood["nodes"][i]!==null && neighborhood["nodes"][i]!==0){
                 // If the node is not visited then recurse on it
                 if(!visited[i]){
                     if(this.isUndirectedCyclicRecurse(i, visited, id)){
@@ -545,7 +651,7 @@ class Graph{
     // Returns true if the graph contains a cycle, else false.
     isUndirectedCyclic(){
         // Mark all the vertices as not visited
-        visited =[]
+        let visited =[]
         for(let i=0; i<this.num_nodes; i++){
             visited.push(false)
         }
@@ -553,7 +659,7 @@ class Graph{
         // DFS trees
         for(let i=0; i<this.num_nodes; i++){
             if(!visited[i]){
-                if(self.isUndirectedCyclicRecurse(i, visited, -1)){
+                if(this.isUndirectedCyclicRecurse(i, visited, -1)){
                     return true
                 }
             }
@@ -562,8 +668,8 @@ class Graph{
     }
 }
 
-export{
-    Node,
-    Edge,
-    Graph
-}
+// export{
+//     Node,
+//     Edge,
+//     Graph
+// }
