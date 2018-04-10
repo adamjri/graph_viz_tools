@@ -197,7 +197,7 @@ class Graph{
         if(id<this.num_nodes){
             let num_edges_removed = 0;
             for(let i=0; i<this.num_nodes; i++){
-                if(i==id){continue;}
+                if(i===id){continue;}
                 if(this.edges[id][i]!==null){
                     num_edges_removed++;
                 }
@@ -295,10 +295,13 @@ class Graph{
         }
     }
     addFieldToEdge(id1, id2, key, value){
-        if(id<this.num_nodes){
-            this.edges[id1][id2].addField(key, value)
-            if(!this.is_directed){
-                this.edges[id2][id1].addField(key, value)
+        let max_ = Math.max(id1, id2);
+        if(max_<this.num_nodes){
+            if(this.edges[id1][id2]!==null){
+                this.edges[id1][id2].addField(key, value)
+                if(!this.is_directed){
+                    this.edges[id2][id1].addField(key, value)
+                }
             }
         }
     }
@@ -312,10 +315,13 @@ class Graph{
         }
     }
     setFieldInEdge(id1, id2, key, value){
-        if(id<this.num_nodes){
-            this.edges[id1][id2].setField(key, value)
-            if(!this.is_directed){
-                this.edges[id2][id1].setField(key, value)
+        let max_ = Math.max(id1, id2);
+        if(max_<this.num_nodes){
+            if(this.edges[id1][id2]!==null){
+                this.edges[id1][id2].setField(key, value)
+                if(!this.is_directed){
+                    this.edges[id2][id1].setField(key, value)
+                }
             }
         }
     }
@@ -329,10 +335,13 @@ class Graph{
         }
     }
     removeFieldFromEdge(id1, id2, key){
-        if(id<this.num_nodes){
-            this.edges[id1][id2].removeField(key)
-            if(!this.is_directed){
-                this.edges[id2][id1].removeField(key)
+        let max_ = Math.max(id1, id2);
+        if(max_<this.num_nodes){
+            if(this.edges[id1][id2]!==null){
+                this.edges[id1][id2].removeField(key)
+                if(!this.is_directed){
+                    this.edges[id2][id1].removeField(key)
+                }
             }
         }
     }
@@ -612,8 +621,8 @@ class Graph{
             recStack.push(false)
         }
         for(let i=0; i<this.num_nodes; i++){
-            if(!visited[node]){
-                if(this.isDirectedCyclicRecurse(node,visited,recStack)){
+            if(!visited[i]){
+                if(this.isDirectedCyclicRecurse(i,visited,recStack)){
                     return true
                 }
             }
@@ -639,7 +648,7 @@ class Graph{
                 }
                 // If an adjacent vertex is visited and not parent of current vertex,
                 // then there is a cycle
-                else if(parent!=i){
+                else if(parent!==i){
                     return true
                 }
             }
@@ -691,8 +700,4 @@ class Graph{
     }
 }
 
-// export{
-//     Node,
-//     Edge,
-//     Graph
-// }
+export{ Node, Edge, Graph }
