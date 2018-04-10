@@ -666,6 +666,29 @@ class Graph{
         }
         return false
     }
+
+    isConnected(){
+        if(this.is_directed){
+            let neighborhood_out = this.getOutgoingNeighborhood(0, 
+                                        this.num_nodes)
+            let neighborhood_in = this.getIngoingNeighborhood(0, 
+                                        this.num_nodes)
+            for(let i=0; i<this.num_nodes; i++){
+                if((neighborhood_out[i]===null) 
+                && (neighborhood_in[i]===null)){
+                    return false
+                }
+            }
+        }
+        else{
+            let neighborhood = this.getNeighborhood(0, this.num_nodes)
+            for(let i=0; i<this.num_nodes; i++){
+                if(neighborhood[i]===null){
+                    return false
+                }
+            }
+        }
+    }
 }
 
 // export{
