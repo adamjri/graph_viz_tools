@@ -1,0 +1,13 @@
+
+/* parent component */
+.Collapsible__trigger {
+    display: inline-block;
+    width: 300px;
+    border: 25px solid red;
+    padding: 25px;
+    margin: 25px;
+}
+
+.Collapsible__contentInner {
+    color: green
+}

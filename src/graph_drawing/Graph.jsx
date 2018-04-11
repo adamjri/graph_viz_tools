@@ -106,12 +106,54 @@ class Edge{
 }
 
 class Graph{
-    constructor(is_directed){
+    constructor(is_directed, fields){
         this.is_directed = !!is_directed;
         this.nodes = [];
         this.edges = [];
         this.num_nodes = 0;
         this.num_edges = 0;
+        this.fields = {}
+        this.fields={}
+        if(fields instanceof Array){
+            for(let i=0; i<fields.length; i++){
+                this.fields[fields[i]]=null
+            }
+        }
+        else if(fields!==null && typeof fields==='object'){
+            this.fields=fields
+        }
+    }
+    addField(key, value){
+        if(!(key in this.fields)){
+            this.fields[key]=null
+            if(value!==undefined){
+                this.fields[key]=value
+            }
+        }
+    }
+
+    setField(key, value){
+        if (key in this.fields){
+            this.fields[key]=value
+        }
+    }
+
+    removeField(key){
+        if (key in this.fields){
+            delete this.fields[key]
+        }
+    }
+
+    clearFields(){
+        this.fields={}
+    }
+
+    getValue(key){
+        return this.fields[key]
+    }
+
+    getFields(){
+        return this.fields
     }
     reset(){
         this.nodes = [];
@@ -700,4 +742,4 @@ class Graph{
     }
 }
 
-export{ Node, Edge, Graph }
+export default Graph

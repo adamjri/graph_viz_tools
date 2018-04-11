@@ -1,2 +1,2 @@
-import {Node, Edge, Graph} from "./Graph";
+import Graph from "./Graph";
 
