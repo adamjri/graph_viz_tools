@@ -1,0 +1,19 @@
+.ToolbarDiv{
+    float: left;
+    position: absolute;
+    box-sizing:border-box;
+
+    border: 2px solid;
+    padding: 2px;
+
+    height: 100%;
+}
+
+#drag {
+    position: absolute;
+    right: -5px;
+    top: 0;
+    bottom: 0;
+    width: 8px;
+    cursor: w-resize;
+}

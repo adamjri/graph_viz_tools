@@ -43,7 +43,7 @@ export default class GraphCanvas extends Component {
 
     render() {
         return (
-            <div className="GraphCanvas" id="1">
+            <div className="GraphCanvas">
                 <canvas ref="canvas" width={300} height={300}/>
             </div>
         );
