@@ -14,7 +14,10 @@ export default class ViewMenu extends Component{
         // <div className="ViewMenuDiv">
         <AccordionItem className="ViewMenu">
             <AccordionItemTitle className="ViewMenuTitle">
-                <h3>View</h3>
+                <h3 className="u-position-relative">
+                    View
+                    <div className="accordion__arrow" role="presentation" />
+                </h3>
             </AccordionItemTitle>
             <AccordionItemBody className="ViewMenuBody">
                 <p>Body content</p>
