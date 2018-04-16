@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
 
+import './graph_canvas.css'
+
 function rect(props) {
     const {ctx, x, y, width, height} = props;
     ctx.fillStyle = "#FF0000";

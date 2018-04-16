@@ -11,7 +11,7 @@ import {
 export default class ViewMenu extends Component{
     render() {
         return (
-        <div className="ViewMenuDiv">
+        // <div className="ViewMenuDiv">
         <AccordionItem className="ViewMenu">
             <AccordionItemTitle className="ViewMenuTitle">
                 <h3>View</h3>
@@ -20,7 +20,7 @@ export default class ViewMenu extends Component{
                 <p>Body content</p>
             </AccordionItemBody>
         </AccordionItem>
-        </div>
+        // </div>
         );
     }
 }

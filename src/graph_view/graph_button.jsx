@@ -1,5 +1,7 @@
 import React, {Component} from 'react'
 
+import "./graph_button.css"
+
 export default class GraphButton extends Component{
     constructor(props){
         super(props);
@@ -13,7 +15,7 @@ export default class GraphButton extends Component{
 
     render() {
         return(
-        <div className="test_class_css">
+        <div className="GraphButton">
             <form onSubmit={this.handleButton}>
                 <button>Submit Graph</button>
             </form>

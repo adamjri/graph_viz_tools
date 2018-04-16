@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 
 import ViewMenu from "./view_menu";
 
-import {debounce} from "throttle-debounce"
+// import {debounce} from "throttle-debounce"
 
 import {
     Accordion,
@@ -19,31 +19,16 @@ export default class Toolbar extends Component{
             isResizing: false,
             lastDownX: 0,
             width: window.innerWidth*0.2,
-            height: 0
+            min_width: 100,
         }
         this.handleDragMouseDown=this.handleDragMouseDown.bind(this);
         this.handleDragMouseMove=this.handleDragMouseMove.bind(this)
         this.handleDragMouseUp=this.handleDragMouseUp.bind(this);
-
-        this.updateWindowDimensions = debounce(100, this.updateWindowDimensions.bind(this));
-    }
-
-    componentDidMount(){
-        this.updateWindowDimensions();
-        window.addEventListener('resize', this.updateWindowDimensions);
-    }
-    componentWillUnmount() {
-        window.removeEventListener('resize', this.updateWindowDimensions);
-    }
-    updateWindowDimensions() {
-        this.setState({
-            height: document.getElementById('toolbar').clientHeight,
-            width: document.getElementById('toolbar').clientWidth
-        })
     }
 
     handleDragMouseDown(e) {
         e.persist()
+        this.props.dragCursor()
         this.setState(prevState => ({
             isResizing: true,
             lastDownX: e.clientX
@@ -64,9 +49,9 @@ export default class Toolbar extends Component{
         }
         let offset = e.clientX - this.state.lastDownX;
         this.setState(prevState => ({
-            width: prevState.width+offset,
+            width: Math.max(prevState.width+offset, prevState.min_width),
             lastDownX: prevState.width+offset
-        }), this.updateWindowDimensions())
+        }))
     }
 
     render()

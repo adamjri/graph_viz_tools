@@ -1,17 +1,16 @@
+/* .ViewMenuDiv{
+    -webkit-user-select: none; 
+    -moz-user-select: none;
+    -ms-user-select: none;
+} */
 
-/* parent component */
-.Collapsible__trigger {
-    display: inline-block;
-    width: 300px;
-    border: 25px solid red;
-    padding: 25px;
-    margin: 25px;
+.ViewMenu{
+    -webkit-user-select: none; 
+    -moz-user-select: none;
+    -ms-user-select: none;
+    border: 2px solid;
 }
 
-.Collapsible__contentInner {
-    display: inline-block;
-    width: 300px;
-    border: 25px solid green;
-    padding: 25px;
-    margin: 25px;
+.ViewMenuTitle{
+    text-align: center
 }
