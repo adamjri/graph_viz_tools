@@ -1,44 +1,59 @@
 .ToolbarDiv{
     float: left;
+    left: 0px;
     position: absolute;
     box-sizing: border-box;
-    -moz-box-sizing:border-box;
-    -webkit-box-sizing:border-box;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
 
     border: 2px solid;
-    padding: 0px;
 
     height: 100%;
-    z-index: 9998;
+    z-index: 9996;
     background-color: #E8E8E8;
 
-    overflow:scroll
+    overflow-y: scroll;
+}
+
+#inner {
+    float:right;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    z-index: 9997;
 }
 
 #drag {
+    float: right;
     position: absolute;
-    float:right;
     right: -5px;
     top: 0;
     bottom: 0;
-    width: 8px;
+    width: 9px;
     cursor: ew-resize;
     z-index: 9999;
+    opacity: 0;
 }
-
-/**
-* ----------------------------------------------
-* Demo styles
-* ----------------------------------------------
-**/
 
 .u-position-relative {
     position: relative;
+    margin-top: 0px;
 }
 
-.accordion {
+#toolbar.accordion {
+    position: absolute;
+    right:0px;
     border: 1px solid rgba(0, 0, 0, 0.1);
-    border-radius: none;
+    z-index: 9998;
+    width: 100%;
+    user-select: none;
+    -webkit-user-select: none; 
+    -moz-user-select: none;
+    -ms-user-select: none;
+}
+
+.accordion__item{
+    font-size: inherit;
 }
 
 .accordion__item + .accordion__item {
@@ -53,15 +68,16 @@
     background-color: #f4f4f4;
     color: #444;
     cursor: pointer;
-    padding-top: 18px;
-    padding-bottom: 18px;
-    padding-right: 30px;
+    padding-top: 6px;
+    padding-bottom: 6px;
+    padding-right: 40px;
     padding-left: 18px;
-    width: calc(100% - 48px);
-    text-align: left;
-    border: none;
+    width: calc(100% - 58px);
+    font-size: inherit;
+    text-align: center;
 
     overflow-wrap: break-word;
+    
 }
 
 .accordion__title:hover {
@@ -92,7 +108,7 @@
     height: 12px;
     position: absolute;
     top: 50%;
-    right: -20px;
+    right: -30px;
     margin-top: -6px;
 }
 

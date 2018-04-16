@@ -5,10 +5,7 @@ import ViewMenu from "./view_menu";
 // import {debounce} from "throttle-debounce"
 
 import {
-    Accordion,
-    AccordionItem,
-    AccordionItemBody,
-    AccordionItemTitle
+    Accordion
 } from 'react-accessible-accordion';
 
 // Demo styles, see 'Styles' section below for some notes on use.
@@ -59,61 +56,17 @@ export default class Toolbar extends Component{
 
     render()
     {
-        var divstyle ={width: this.state.width}
+        var divstyle = {width: this.state.width}
+        var accordionstyle = {fontSize: this.state.width*0.15}
         return(
         <div className="ToolbarDiv" id="toolbar" style={divstyle}>
-            <div id="drag"
-                onMouseDown={this.handleDragMouseDown}/>
-            {/* <Accordion className="Toolbar">
-                <ViewMenu/>
-                <ViewMenu/>
-            </Accordion> */}
-            <Accordion accordion={false}>
-            <AccordionItem>
-                <AccordionItemTitle>
-                    <h3 className="u-position-relative">
-                        Accordion
-                        <div className="accordion__arrow" role="presentation" />
-                    </h3>
-                </AccordionItemTitle>
-                <AccordionItemBody>
-                    <p>Hello</p>
-                </AccordionItemBody>
-            </AccordionItem>
-            <AccordionItem>
-                <AccordionItemTitle>
-                    <h3 className="u-position-relative">
-                        AccordionItem
-                        <div className="accordion__arrow" role="presentation" />
-                    </h3>
-                </AccordionItemTitle>
-                <AccordionItemBody>
-                    <p>Hello</p>
-                </AccordionItemBody>
-            </AccordionItem>
-            <AccordionItem>
-                <AccordionItemTitle>
-                    <h3 className="u-position-relative">
-                        AccordionItemTitle
-                        <div className="accordion__arrow" role="presentation" />
-                    </h3>
-                </AccordionItemTitle>
-                <AccordionItemBody>
-                    <p>Hello</p>
-                </AccordionItemBody>
-            </AccordionItem>
-            <AccordionItem>
-                <AccordionItemTitle>
-                    <h3 className="u-position-relative">
-                        AccordionItemBody
-                        <div className="accordion__arrow" role="presentation" />
-                    </h3>
-                </AccordionItemTitle>
-                <AccordionItemBody>
-                    <p>Hello</p>
-                </AccordionItemBody>
-            </AccordionItem>
-        </Accordion>
+            <div id="inner">
+            <Accordion id="toolbar" accordion={false} style={accordionstyle}>
+            <ViewMenu/>
+            <ViewMenu/>
+            </Accordion>
+            </div>
+            <div id="drag" onMouseDown={this.handleDragMouseDown}/>
         </div>
         )
     }

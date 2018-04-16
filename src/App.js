@@ -22,7 +22,7 @@ class App extends Component {
         this.toolbarDragCursor=this.toolbarDragCursor.bind(this)
         this.resetCursor=this.resetCursor.bind(this)
     }
-    
+
     componentDidMount(){
         window.Graph=Graph
     }
@@ -58,8 +58,10 @@ class App extends Component {
             onMouseMove={this.handleMouseMove}
             onMouseUp={this.handleMouseUp}
             style={{cursor: this.state.cursor}}>
+
             <Toolbar ref={this.toolbar}
                     dragCursor={this.toolbarDragCursor}/>
+                    
             <GraphCanvas ref={this.graph_canvas}/>
             <GraphButton onButtonPress={this.handleGraphButtonPress}/>
         </div>
