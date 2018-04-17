@@ -58,7 +58,7 @@ export default class GraphCanvas extends Component {
     }
 
     updateElements() {
-        let r = new Rectangle(10*(this.state.current_graph+8),
+        let r = new Rectangle(10*(this.state.current_graph+18),
                                 10*(this.state.current_graph+8),
                                 50,
                                 50)
