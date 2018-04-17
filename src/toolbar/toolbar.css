@@ -13,6 +13,8 @@
     background-color: #E8E8E8;
 
     overflow-y: scroll;
+
+    max-width: 300;
 }
 
 #inner {

@@ -3,17 +3,26 @@ import './App.css';
 
 import Graph from "./graph_drawing/Graph";
 
-import GraphCanvas from "./graph_view/graph_canvas";
+import DisplayManager from "./visualization_window/display_manager";
 import Toolbar from "./toolbar/toolbar";
 
 class App extends Component {
     constructor(props){
         super(props);
-        this.graph_canvas = React.createRef();
+        this.displaymanager = React.createRef();
         this.toolbar = React.createRef();
         this.state = {
-            cursor: "default"
+            cursor: "default",
+
+            width: window.innerWidth,
+            height: window.innerHeight,
+
         }
+
+        //Window resizing
+        this.updateDimensions = this.updateDimensions.bind(this)
+        this.createWindowResizeListener = this.createWindowResizeListener.bind(this)
+        this.deleteWindowResizeListener = this.deleteWindowResizeListener.bind(this)
 
         //toolbar
             //viewmenu
@@ -26,14 +35,40 @@ class App extends Component {
             this.resetCursor=this.resetCursor.bind(this)
     }
 
+    //***********************************************************
+    // Handle mount and unmount
     componentDidMount(){
         window.Graph=Graph
+
+        this.updateDimensions()
+        this.createWindowResizeListener()
     }
 
+    componentWillUnmount(){
+        this.deleteWindowResizeListener()
+    }
+
+    //***********************************************************
+    //functions for detecting window resizing
+    updateDimensions(){
+        this.setState({
+            width: window.innerWidth,
+            height: window.innerHeight,
+        })
+    }
+    createWindowResizeListener(){
+        window.addEventListener("resize", this.updateDimensions);
+    }
+    deleteWindowResizeListener(){
+        window.removeEventListener("resize", this.updateDimensions);
+    }
+
+    //***********************************************************
+
     // receive graph button press from toolbar
-    // pass down to graph canvas
+    // pass down to display manager
     handleGraphButtonPress(e){
-        this.graph_canvas.current.handleGraphButtonPress(e)
+        this.displaymanager.current.handleGraphButtonPress(e)
     }
 
     // pass mouse up down to toolbar for drag bar
@@ -66,12 +101,12 @@ class App extends Component {
             onMouseMove={this.handleMouseMove}
             onMouseUp={this.handleMouseUp}
             style={{cursor: this.state.cursor}}>
-
+            <DisplayManager ref={this.displaymanager}
+                            windowWidth={this.state.width}
+                            windowHeight={this.state.height}/>
             <Toolbar ref={this.toolbar}
                     dragCursor={this.toolbarDragCursor}
                     handleGraphButtonPress={this.handleGraphButtonPress}/>
-                    
-            <GraphCanvas ref={this.graph_canvas}/>
         </div>
         );
     }
