@@ -8,7 +8,22 @@ import {
     AccordionItemBody,
 } from 'react-accessible-accordion';
 
+import GraphButton from './graph_button';
+
 export default class ViewMenu extends Component{
+    constructor(props){
+        super(props);
+        //graph button
+        this.handleGraphButtonPress=this.handleGraphButtonPress.bind(this)
+    }
+
+    // receive button press from GraphButton element
+    // pass up to toolbar
+    handleGraphButtonPress(e){
+        e.preventDefault();
+        this.props.handleGraphButtonPress(e)
+    }
+
     render() {
         return (
         <AccordionItem id="viewmenu">
@@ -19,7 +34,7 @@ export default class ViewMenu extends Component{
                 </h3>
             </AccordionItemTitle>
             <AccordionItemBody id="viewmenubody">
-                <p>Body content</p>
+                <GraphButton handleGraphButtonPress={this.handleGraphButtonPress}/>
             </AccordionItemBody>
         </AccordionItem>
         );

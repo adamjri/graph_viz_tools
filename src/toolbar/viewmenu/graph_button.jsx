@@ -10,7 +10,7 @@ export default class GraphButton extends Component{
 
     handleButton(e){
         e.preventDefault();
-        this.props.onButtonPress(e)
+        this.props.handleGraphButtonPress(e)
     }
 
     render() {

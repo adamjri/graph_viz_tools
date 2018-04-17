@@ -1,12 +1,10 @@
 import React, { Component } from 'react';
 
-import ViewMenu from "./view_menu";
+import ViewMenu from "./viewmenu/view_menu";
 
 // import {debounce} from "throttle-debounce"
 
-import {
-    Accordion
-} from 'react-accessible-accordion';
+import {Accordion} from 'react-accessible-accordion';
 
 // Demo styles, see 'Styles' section below for some notes on use.
 import 'react-accessible-accordion/dist/fancy-example.css';
@@ -21,9 +19,21 @@ export default class Toolbar extends Component{
             width: window.innerWidth*0.2,
             min_width: 100,
         }
+        // ViewMenu
+            // graph button
+            this.handleGraphButtonPress=this.handleGraphButtonPress.bind(this)
+
+        // Drag bar
         this.handleDragMouseDown=this.handleDragMouseDown.bind(this);
         this.handleDragMouseMove=this.handleDragMouseMove.bind(this)
         this.handleDragMouseUp=this.handleDragMouseUp.bind(this);
+    }
+
+    // receive button press from ViewMenu element
+    // pass up to App
+    handleGraphButtonPress(e){
+        e.preventDefault();
+        this.props.handleGraphButtonPress(e)
     }
 
     handleDragMouseDown(e) {
@@ -62,8 +72,7 @@ export default class Toolbar extends Component{
         <div className="ToolbarDiv" id="toolbar" style={divstyle}>
             <div id="inner">
             <Accordion id="toolbar" accordion={false} style={accordionstyle}>
-            <ViewMenu/>
-            <ViewMenu/>
+                <ViewMenu handleGraphButtonPress={this.handleGraphButtonPress}/>
             </Accordion>
             </div>
             <div id="drag" onMouseDown={this.handleDragMouseDown}/>
