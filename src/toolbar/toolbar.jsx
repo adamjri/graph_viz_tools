@@ -46,6 +46,9 @@ export default class Toolbar extends Component{
     };
 
     handleDragMouseUp(e){
+        if(!this.state.isResizing){
+            return;
+        }
         this.setState(prevState=>({
             isResizing: false
         }));

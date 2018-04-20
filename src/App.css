@@ -3,6 +3,7 @@
     width: 100%;
     position: absolute;
     box-sizing: border-box;
+    overflow: hidden;
 
     border: 0;
     padding: 0;
