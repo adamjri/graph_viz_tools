@@ -108,7 +108,7 @@ export default class GraphSvg extends Component {
     handleOnWheel(e){
         e.preventDefault()
         let center = [e.clientX, e.clientY]
-        let new_scale = (1-e.deltaY/200)
+        let new_scale = (1-e.deltaY/300)
         let new_transform = [new_scale, 0, 0, new_scale,
                             (-new_scale+1)*center[0], (-new_scale+1)*center[1]]
         this.setState(prevState=>({
