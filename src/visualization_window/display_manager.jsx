@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 
 import './display_manager.css'
 
-import GraphCanvas from "./graph_view/graph_canvas";
+import GraphSvg from "./graph_view/graph_svg";
 
 // class for toggling between graph and text display
 export default class DisplayManager extends Component {
@@ -12,8 +12,6 @@ export default class DisplayManager extends Component {
             width: this.props.windowWidth,
             height: this.props.windowHeight,
             display_type: "graph",
-            graphs: [],
-            current_graph: -1,
         }
         this.GraphDisplayRef = React.createRef();
         this.TextDisplayRef = React.createRef();
@@ -21,6 +19,18 @@ export default class DisplayManager extends Component {
         // bind functions
         this.setDisplayToGraph = this.setDisplayToGraph.bind(this);
         this.setDisplayToText = this.setDisplayToText.bind(this);
+    }
+
+    componentWillReceiveProps(nextProps) {
+        // You don't have to do this check first, but it can help prevent an unneeded render
+        let widthNotSame = (nextProps.windowWidth !== this.state.width);
+        let heightNotSame = (nextProps.windowHeight !== this.state.height);
+        if (widthNotSame || heightNotSame) {
+            this.setState({
+                width: nextProps.windowWidth,
+                height: nextProps.windowHeight
+            });
+        }
     }
 
     setDisplayToGraph(){
@@ -57,7 +67,7 @@ export default class DisplayManager extends Component {
         }
         return (
             <div className="DisplayManager">
-                <GraphCanvas ref={this.GraphDisplayRef}
+                <GraphSvg ref={this.GraphDisplayRef}
                             style={graph_style}
                             windowWidth={this.state.width}
                             windowHeight={this.state.height}/>
