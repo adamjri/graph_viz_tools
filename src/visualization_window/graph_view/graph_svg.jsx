@@ -391,6 +391,9 @@ export default class GraphSvg extends Component {
         let new_adjacency_mat = this.state.adjacency_mat
         for(let i=0; i<coordinates.length; i++){
             new_adjacency_mat[coordinates[i][0]][coordinates[i][1]] = null
+            if(this.state.is_undirected){
+                new_adjacency_mat[coordinates[i][1]][coordinates[i][0]] = null
+            }
         }
         // set new state
         this.setState({
