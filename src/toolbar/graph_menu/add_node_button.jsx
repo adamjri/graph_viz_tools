@@ -1,8 +1,8 @@
 import React, {Component} from 'react'
 
-import "./graph_button.css"
+import "./add_node_button.css"
 
-export default class GraphButton extends Component{
+export default class AddNodeButton extends Component{
     constructor(props){
         super(props);
         this.handleButton=this.handleButton.bind(this)
@@ -10,14 +10,14 @@ export default class GraphButton extends Component{
 
     handleButton(e){
         e.preventDefault();
-        this.props.handleGraphButtonPress(e)
+        this.props.handleAddNodeButtonPress(e)
     }
 
     render() {
         return(
-        <div className="GraphButton">
+        <div className="AddNodeButton">
             <form onSubmit={this.handleButton}>
-                <button>Submit Graph</button>
+                <button>Add Node</button>
             </form>
         </div>
         )

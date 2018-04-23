@@ -19,6 +19,8 @@ export default class DisplayManager extends Component {
         // bind functions
         this.setDisplayToGraph = this.setDisplayToGraph.bind(this);
         this.setDisplayToText = this.setDisplayToText.bind(this);
+
+        this.handleAddNodeButtonPress = this.handleAddNodeButtonPress.bind(this)
     }
 
     componentWillReceiveProps(nextProps) {
@@ -48,9 +50,9 @@ export default class DisplayManager extends Component {
         }
     }
 
-    handleGraphButtonPress(e){
+    handleAddNodeButtonPress(e){
         if(this.state.display_type==="graph"){
-            this.GraphDisplayRef.current.handleGraphButtonPress(e)
+            this.GraphDisplayRef.current.handleAddNodeButtonPress(e)
         }
     }
 
