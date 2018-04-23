@@ -11,7 +11,7 @@ export default class GraphSvg extends Component {
             height: this.props.windowHeight,
 
             // boolean for whether or not graph is directed
-            is_undirected: true,
+            is_undirected: false,
 
             // list of descriptions of nodes
             nodes: [],
@@ -59,7 +59,11 @@ export default class GraphSvg extends Component {
         // handler for resetting transform
         this.resetTransform = this.resetTransform.bind(this)
 
+        // functions for rendering edges
         this.render_self_edge = this.render_self_edge.bind(this)
+        this.render_straight_double_edge = this.render_straight_double_edge.bind(this)
+        this.render_straight_edge = this.render_straight_edge.bind(this)
+        this.render_curved_edge = this.render_curved_edge.bind(this)
         this.render_all_edges = this.render_all_edges.bind(this)
     }
 
@@ -239,17 +243,17 @@ export default class GraphSvg extends Component {
                 last_down_y: e.clientY
             })
         }
-        // left dragging of svg to pan
-        else if(this.state.svg_left_down) {
-            let new_transform = this.state.transform_mat
-            new_transform[4]+=offsetX;
-            new_transform[5]+=offsetY;
-            this.setState({
-                transform_mat: new_transform,
-                last_down_x: e.clientX,
-                last_down_y: e.clientY
-            })
-        }   
+        // // left dragging of svg to pan
+        // else if(this.state.svg_left_down) {
+        //     let new_transform = this.state.transform_mat
+        //     new_transform[4]+=offsetX;
+        //     new_transform[5]+=offsetY;
+        //     this.setState({
+        //         transform_mat: new_transform,
+        //         last_down_x: e.clientX,
+        //         last_down_y: e.clientY
+        //     })
+        // }   
     }
 
     // ****************************************************************************
@@ -316,12 +320,8 @@ export default class GraphSvg extends Component {
         let new_adjacency_mat = this.state.adjacency_mat
         if(new_adjacency_mat[n1][n2]===null){
             let new_edge = {
-                x1: this.state.nodes[n1].cx,
-                y1: this.state.nodes[n1].cy,
-                x2: this.state.nodes[n2].cx,
-                y2: this.state.nodes[n2].cy,
                 stroke: "green",
-                strokeWidth: 2,
+                strokeWidth: 4,
                 fields: {},
                 left_mouse_down: false,
                 right_mouse_down: false,
@@ -391,6 +391,8 @@ export default class GraphSvg extends Component {
         this.removeEdges(indices)
     }
 
+    //*************************************************
+    // functions for rendering edges
     rotate(point, rotation){
         let cosx = Math.cos(rotation*Math.PI/180);
         let sinx = Math.sin(rotation*Math.PI/180);
@@ -400,30 +402,170 @@ export default class GraphSvg extends Component {
     render_self_edge(node_index, key){
         // draw circle 3/4 away and place arrow
         let rotation = 45;
+        let sw = this.state.adjacency_mat[node_index][node_index].strokeWidth
         let r = this.state.nodes[node_index].r;
         let cx = this.state.nodes[node_index].cx;
         let cy = this.state.nodes[node_index].cy;
         let new_center = this.rotate([1.5*r, 0], rotation)
-        new_center = [Math.round(cx+new_center[0]), Math.round(cy-new_center[1])]
+        new_center = [cx+new_center[0], cy-new_center[1]]
         let p0 = this.rotate([0.75*r, 0.66144*r], rotation);
-        let p1 = this.rotate([0.89322*r, 1.2018*r], rotation);
-        let p2 = this.rotate([1.26822*r, 0.87108*r], rotation);
-        p0 = [Math.round(cx+p0[0]), Math.round(cy-p0[1])];
-        p1 = [Math.round(cx+p1[0]), Math.round(cy-p1[1])];
-        p2 = [Math.round(cx+p2[0]), Math.round(cy-p2[1])];
+        let p1 = this.rotate([0.75*(r+sw*4)+0.33072*sw*4, 0.66144*(r+sw*4)-0.375*sw*4],
+                            rotation);
+        let p2 = this.rotate([0.75*(r+sw*4)-0.33072*sw*4, 0.66144*(r+sw*4)+0.375*sw*4],
+                            rotation);
+        p0 = [cx+p0[0], cy-p0[1]];
+        p1 = [cx+p1[0], cy-p1[1]];
+        p2 = [cx+p2[0], cy-p2[1]];
         let path_description = "M"+p0[0]+" "+p0[1]+
                                 " L"+p1[0]+" "+p1[1]+
                                 " L"+p2[0]+" "+p2[1]+
                                 " Z";
         return (
-            <g key={key}>
+            <g key={key}
+                cursor="pointer">
+                <circle cx={new_center[0]}
+                        cy={new_center[1]}
+                        r={r}
+                        stroke={this.state.adjacency_mat[node_index][node_index].stroke}
+                        strokeWidth={sw}
+                        fill="none"/>
                 <circle cx={new_center[0]}
                         cy={new_center[1]}
                         r={r}
                         stroke="black"
-                        strokeWidth={this.state.nodes[node_index].strokeWidth}
+                        strokeWidth={sw+16}
+                        opacity={0}
                         fill="none"/>
-                <path d={path_description}/>
+                <path d={path_description}
+                        fill={this.state.adjacency_mat[node_index][node_index].stroke}/>
+            </g>
+        );
+    }
+    render_straight_double_edge(n1, n2, key){
+        let stroke=this.state.adjacency_mat[n1][n2].stroke
+        let cx1 = this.state.nodes[n1].cx
+        let cy1 = this.state.nodes[n1].cy
+        let cx2 = this.state.nodes[n2].cx
+        let cy2 = this.state.nodes[n2].cy
+        let sw =this.state.adjacency_mat[n1][n2].strokeWidth;
+        let R1 = this.state.nodes[n1].r+sw/2
+        let R2 = this.state.nodes[n2].r+sw/2
+        let delX = cx2-cx1;
+        let delY = cy2-cy1;
+        let norm = Math.sqrt(delX*delX+delY*delY)
+
+        let p10 = [cx1+delX*R1/norm, cy1+delY*R1/norm]
+        let p11 = [cx1+(delX*(R1+sw*4)-delY*sw*2)/norm, cy1+(delY*(R1+sw*4)+delX*sw*2)/norm]
+        let p12 = [cx1+(delX*(R1+sw*4)+delY*sw*2)/norm, cy1+(delY*(R1+sw*4)-delX*sw*2)/norm]
+        let p20 = [cx2-delX*R2/norm, cy2-delY*R2/norm]
+        let p21 = [cx2-(delX*(R2+sw*4)-delY*sw*2)/norm, cy2-(delY*(R2+sw*4)+delX*sw*2)/norm]
+        let p22 = [cx2-(delX*(R2+sw*4)+delY*sw*2)/norm, cy2-(delY*(R2+sw*4)-delX*sw*2)/norm]
+        let s1 = [cx1+delX*(R1+sw*4)/norm, cy1+delY*(R1+sw*4)/norm]
+        let s2 = [cx2-delX*(R2+sw*4)/norm, cy2-delY*(R2+sw*4)/norm]
+        let path_description1 = "M"+p10[0]+" "+p10[1]+
+                                " L"+p11[0]+" "+p11[1]+
+                                " L"+p12[0]+" "+p12[1]+
+                                " Z";
+        let path_description2 = "M"+p20[0]+" "+p20[1]+
+                                " L"+p21[0]+" "+p21[1]+
+                                " L"+p22[0]+" "+p22[1]+
+                                " Z";
+        return (
+            <g key={key}
+                cursor="pointer">
+                <line x1={s1[0]} y1={s1[1]}
+                        x2={s2[0]} y2={s2[1]}
+                        stroke={stroke}
+                        strokeWidth={sw}/>
+                <line x1={cx1} y1={cy1}
+                        x2={cx2} y2={cy2}
+                        stroke={stroke}
+                        strokeWidth={sw+16}
+                        opacity={0}/>
+                <path d={path_description1}
+                        fill={stroke}/>
+                <path d={path_description2}
+                        fill={stroke}/>
+            </g>
+        );
+    }
+    render_straight_edge(n1, n2, key){
+        let stroke=this.state.adjacency_mat[n1][n2].stroke
+        let cx1 = this.state.nodes[n1].cx
+        let cy1 = this.state.nodes[n1].cy
+        let cx2 = this.state.nodes[n2].cx
+        let cy2 = this.state.nodes[n2].cy
+        let sw =this.state.adjacency_mat[n1][n2].strokeWidth;
+        let R2 = this.state.nodes[n2].r+sw/2
+        let delX = cx2-cx1;
+        let delY = cy2-cy1;
+        let norm = Math.sqrt(delX*delX+delY*delY)
+
+        let p20 = [cx2-delX*R2/norm, cy2-delY*R2/norm]
+        let p21 = [cx2-(delX*(R2+sw*4)-delY*sw*2)/norm, cy2-(delY*(R2+sw*4)+delX*sw*2)/norm]
+        let p22 = [cx2-(delX*(R2+sw*4)+delY*sw*2)/norm, cy2-(delY*(R2+sw*4)-delX*sw*2)/norm]
+        let s2 = [cx2-delX*(R2+sw*4)/norm, cy2-delY*(R2+sw*4)/norm]
+        let path_description2 = "M"+p20[0]+" "+p20[1]+
+                                " L"+p21[0]+" "+p21[1]+
+                                " L"+p22[0]+" "+p22[1]+
+                                " Z";
+        return (
+            <g key={key}
+                cursor="pointer">
+                <line x1={cx1} y1={cy1}
+                        x2={s2[0]} y2={s2[1]}
+                        stroke={stroke}
+                        strokeWidth={sw}/>
+                <line x1={cx1} y1={cy1}
+                        x2={cx2} y2={cy2}
+                        stroke={stroke}
+                        strokeWidth={sw+16}
+                        opacity={0}/>
+                <path d={path_description2}
+                        fill={stroke}/>
+            </g>
+        );
+    }
+    render_curved_edge(n1, n2, key){
+        let stroke = this.state.adjacency_mat[n1][n2].stroke;
+        let sw = this.state.adjacency_mat[n1][n2].strokeWidth;
+        let r = this.state.nodes[n2].r+sw/2;
+        let cx1 = this.state.nodes[n1].cx;
+        let cy1 = this.state.nodes[n1].cy;
+        let cx2 = this.state.nodes[n2].cx;
+        let cy2 = this.state.nodes[n2].cy;
+        let delX = cx2-cx1;
+        let delY = cy2-cy1;
+        let ax = -2*delY+delX/2;
+        let ay = 2*delX+delY/2;
+        let R = Math.sqrt(ax*ax+ay*ay)
+        let arc_description = ["M", cx1, cy1, 
+                                "A", R, R, 0, "0", 0, cx2, cy2
+                            ].join(" ");
+        
+        let lx = delX - ax;
+        let ly = delY - ay;
+        let p0 = [cx2+ly*r/R, cy2-lx*r/R];
+        let p1 = [cx2+(ly*(r+sw*4)+lx*sw*2)/R, cy2-(lx*(r+sw*4)-ly*sw*2)/R];
+        let p2 = [cx2+(ly*(r+sw*4)-lx*sw*2)/R, cy2-(lx*(r+sw*4)+ly*sw*2)/R];
+        let path_description = "M"+p0[0]+" "+p0[1]+
+                                " L"+p1[0]+" "+p1[1]+
+                                " L"+p2[0]+" "+p2[1]+
+                                " Z";
+        return (
+            <g key={key}
+                cursor="pointer">
+                <path d={arc_description}
+                        stroke={stroke}
+                        strokeWidth={sw}
+                        fill="none"/>
+                <path d={arc_description}
+                        stroke={stroke}
+                        strokeWidth={sw+16}
+                        fill="none"
+                        opacity={0}/>
+                <path d={path_description}
+                        fill={stroke}/>
             </g>
         );
     }
@@ -432,12 +574,27 @@ export default class GraphSvg extends Component {
         let edges = []
         let key=0
         for(let i=0; i<l; i++){
-            for(let j=0; j<l; j++){
-                if(i===j){
-                    if(this.state.adjacency_mat[i][j]!==null){
+            let bound=0;
+            if(this.state.is_undirected){
+                bound=i;
+            }
+            for(let j=bound; j<l; j++){
+                if(this.state.adjacency_mat[i][j]!==null){
+                    if(i===j){
                         edges.push(this.render_self_edge(i, "e"+key))
-                        key++
                     }
+                    else if(this.state.is_undirected){
+                        edges.push(this.render_straight_double_edge(i, j, "e"+key))
+                    }
+                    else{
+                        if(this.state.adjacency_mat[j][i]===null){
+                            edges.push(this.render_straight_edge(i, j, "e"+key))
+                        }
+                        else{
+                            edges.push(this.render_curved_edge(i, j, "e"+key))
+                        }
+                    }
+                    key++
                 }
             }
         }
