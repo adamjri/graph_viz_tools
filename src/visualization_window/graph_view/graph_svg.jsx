@@ -11,7 +11,7 @@ export default class GraphSvg extends Component {
             height: this.props.windowHeight,
 
             // boolean for whether or not graph is directed
-            is_undirected: false,
+            is_undirected: true,
 
             // list of descriptions of nodes
             nodes: [],
@@ -39,10 +39,13 @@ export default class GraphSvg extends Component {
         this.handleRemoveEdgesButtonPress = this.handleRemoveEdgesButtonPress.bind(this)
         this.removeEdges = this.removeEdges.bind(this)
 
-        // generates handlers for mouse down and click on nodes
+        // generates handlers for mouse down and double click on nodes
         this.nodeMouseDownGenerator = this.nodeMouseDownGenerator.bind(this)
         this.nodeMouseUpGenerator = this.nodeMouseUpGenerator.bind(this)
         this.nodeDoubleClickGenerator = this.nodeDoubleClickGenerator.bind(this)
+
+        // generates handlers for double click on edges
+        this.edgeDoubleClickGenerator = this.edgeDoubleClickGenerator.bind(this)
 
         // handler for mouse down on svg
         this.handleSVGMouseDown = this.handleSVGMouseDown.bind(this)
@@ -130,6 +133,7 @@ export default class GraphSvg extends Component {
             this.handleCreateEdge(right_down_node, node_index)
         }
     }
+    //handle mouse double click on nodes
     nodeDoubleClickGenerator(node_index){
         return function(e){
             let new_nodes = this.state.nodes;
@@ -144,6 +148,22 @@ export default class GraphSvg extends Component {
             }
             this.setState({
                 nodes: new_nodes,
+            })
+        }
+    }
+    //handle mouse double click on edges
+    edgeDoubleClickGenerator(n1, n2){
+        return function(e){
+            let new_adjacency_mat = this.state.adjacency_mat;
+            new_adjacency_mat[n1][n2].highlighted = !new_adjacency_mat[n1][n2].highlighted
+            if(new_adjacency_mat[n1][n2].stroke==="green"){
+                new_adjacency_mat[n1][n2].stroke = "deeppink";
+            }
+            else{
+                new_adjacency_mat[n1][n2].stroke = "green";
+            }
+            this.setState({
+                adjacency_mat: new_adjacency_mat,
             })
         }
     }
@@ -243,17 +263,17 @@ export default class GraphSvg extends Component {
                 last_down_y: e.clientY
             })
         }
-        // // left dragging of svg to pan
-        // else if(this.state.svg_left_down) {
-        //     let new_transform = this.state.transform_mat
-        //     new_transform[4]+=offsetX;
-        //     new_transform[5]+=offsetY;
-        //     this.setState({
-        //         transform_mat: new_transform,
-        //         last_down_x: e.clientX,
-        //         last_down_y: e.clientY
-        //     })
-        // }   
+        // left dragging of svg to pan
+        else if(this.state.svg_left_down) {
+            let new_transform = this.state.transform_mat
+            new_transform[4]+=offsetX;
+            new_transform[5]+=offsetY;
+            this.setState({
+                transform_mat: new_transform,
+                last_down_x: e.clientX,
+                last_down_y: e.clientY
+            })
+        }   
     }
 
     // ****************************************************************************
@@ -323,8 +343,6 @@ export default class GraphSvg extends Component {
                 stroke: "green",
                 strokeWidth: 4,
                 fields: {},
-                left_mouse_down: false,
-                right_mouse_down: false,
                 highlighted: false,
             }
             new_adjacency_mat[n1][n2] = new_edge
@@ -362,7 +380,7 @@ export default class GraphSvg extends Component {
         // get list of indices to delete
         let indices = [];
         for(let i=0; i<this.state.nodes.length; i++){
-            if(this.state.nodes.highlighted){
+            if(this.state.nodes[i].highlighted){
                 indices.push(i)
             }
         }
@@ -382,13 +400,21 @@ export default class GraphSvg extends Component {
     // remove highlighted edges button
     handleRemoveEdgesButtonPress(e){
         // get list of coordinates to delete
-        let indices = [];
-        for(let i=0; i<this.state.current_edges.length; i++){
-            if(this.state.nodes.highlighted){
-                indices.push(i)
+        let coordinates = [];
+        for(let i=0; i<this.state.adjacency_mat.length; i++){
+            let bound=0;
+            if(this.state.is_undirected){
+                bound=i;
+            }
+            for(let j=bound; j<this.state.adjacency_mat.length; j++){
+                if(this.state.adjacency_mat[i][j]!==null){
+                    if(this.state.adjacency_mat[i][j].highlighted){
+                        coordinates.push([i, j])
+                    }
+                }
             }
         }
-        this.removeEdges(indices)
+        this.removeEdges(coordinates)
     }
 
     //*************************************************
@@ -422,7 +448,8 @@ export default class GraphSvg extends Component {
                                 " Z";
         return (
             <g key={key}
-                cursor="pointer">
+                cursor="pointer"
+                onDoubleClick={this.edgeDoubleClickGenerator(node_index, node_index).bind(this)}>
                 <circle cx={new_center[0]}
                         cy={new_center[1]}
                         r={r}
@@ -472,7 +499,8 @@ export default class GraphSvg extends Component {
                                 " Z";
         return (
             <g key={key}
-                cursor="pointer">
+                cursor="pointer"
+                onDoubleClick={this.edgeDoubleClickGenerator(n1, n2).bind(this)}>
                 <line x1={s1[0]} y1={s1[1]}
                         x2={s2[0]} y2={s2[1]}
                         stroke={stroke}
@@ -511,7 +539,8 @@ export default class GraphSvg extends Component {
                                 " Z";
         return (
             <g key={key}
-                cursor="pointer">
+                cursor="pointer"
+                onDoubleClick={this.edgeDoubleClickGenerator(n1, n2).bind(this)}>
                 <line x1={cx1} y1={cy1}
                         x2={s2[0]} y2={s2[1]}
                         stroke={stroke}
@@ -536,8 +565,8 @@ export default class GraphSvg extends Component {
         let cy2 = this.state.nodes[n2].cy;
         let delX = cx2-cx1;
         let delY = cy2-cy1;
-        let ax = -2*delY+delX/2;
-        let ay = 2*delX+delY/2;
+        let ax = 2*delY+delX/2;
+        let ay = -2*delX+delY/2;
         let R = Math.sqrt(ax*ax+ay*ay)
         let arc_description = ["M", cx1, cy1, 
                                 "A", R, R, 0, "0", 0, cx2, cy2
@@ -545,16 +574,17 @@ export default class GraphSvg extends Component {
         
         let lx = delX - ax;
         let ly = delY - ay;
-        let p0 = [cx2+ly*r/R, cy2-lx*r/R];
-        let p1 = [cx2+(ly*(r+sw*4)+lx*sw*2)/R, cy2-(lx*(r+sw*4)-ly*sw*2)/R];
-        let p2 = [cx2+(ly*(r+sw*4)-lx*sw*2)/R, cy2-(lx*(r+sw*4)+ly*sw*2)/R];
+        let p0 = [cx2-ly*r/R, cy2+lx*r/R];
+        let p1 = [cx2-(ly*(r+sw*4)+lx*sw*2)/R, cy2+(lx*(r+sw*4)-ly*sw*2)/R];
+        let p2 = [cx2-(ly*(r+sw*4)-lx*sw*2)/R, cy2+(lx*(r+sw*4)+ly*sw*2)/R];
         let path_description = "M"+p0[0]+" "+p0[1]+
                                 " L"+p1[0]+" "+p1[1]+
                                 " L"+p2[0]+" "+p2[1]+
                                 " Z";
         return (
             <g key={key}
-                cursor="pointer">
+                cursor="pointer"
+                onDoubleClick={this.edgeDoubleClickGenerator(n1, n2).bind(this)}>
                 <path d={arc_description}
                         stroke={stroke}
                         strokeWidth={sw}

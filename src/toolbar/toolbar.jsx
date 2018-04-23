@@ -20,8 +20,10 @@ export default class Toolbar extends Component{
             min_width: 100,
         }
         // ViewMenu
-            // graph button
+            // graph buttons
             this.handleAddNodeButtonPress=this.handleAddNodeButtonPress.bind(this)
+            this.handleRemoveNodesButtonPress=this.handleRemoveNodesButtonPress.bind(this)
+            this.handleRemoveEdgesButtonPress=this.handleRemoveEdgesButtonPress.bind(this)
 
         // Drag bar
         this.handleDragMouseDown=this.handleDragMouseDown.bind(this);
@@ -34,6 +36,14 @@ export default class Toolbar extends Component{
     handleAddNodeButtonPress(e){
         e.preventDefault();
         this.props.handleAddNodeButtonPress(e)
+    }
+    handleRemoveNodesButtonPress(e){
+        e.preventDefault();
+        this.props.handleRemoveNodesButtonPress(e)
+    }
+    handleRemoveEdgesButtonPress(e){
+        e.preventDefault();
+        this.props.handleRemoveEdgesButtonPress(e)
     }
 
     handleDragMouseDown(e) {
@@ -75,7 +85,9 @@ export default class Toolbar extends Component{
         <div className="ToolbarDiv" id="toolbar" style={divstyle}>
             <div id="inner">
             <Accordion id="toolbar" accordion={false} style={accordionstyle}>
-                <GraphMenu handleAddNodeButtonPress={this.handleAddNodeButtonPress}/>
+                <GraphMenu handleAddNodeButtonPress={this.handleAddNodeButtonPress}
+                            handleRemoveNodesButtonPress={this.handleRemoveNodesButtonPress}
+                            handleRemoveEdgesButtonPress={this.handleRemoveEdgesButtonPress}/>
             </Accordion>
             </div>
             <div id="drag" onMouseDown={this.handleDragMouseDown}/>

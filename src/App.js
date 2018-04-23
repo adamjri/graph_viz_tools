@@ -28,6 +28,8 @@ class App extends Component {
             //viewmenu
                 //add node button
                 this.handleAddNodeButtonPress=this.handleAddNodeButtonPress.bind(this)
+                this.handleRemoveNodesButtonPress=this.handleRemoveNodesButtonPress.bind(this)
+                this.handleRemoveEdgesButtonPress=this.handleRemoveEdgesButtonPress.bind(this)
             //drag bar
             this.handleMouseUp=this.handleMouseUp.bind(this)
             this.handleMouseMove=this.handleMouseMove.bind(this)
@@ -70,6 +72,12 @@ class App extends Component {
     handleAddNodeButtonPress(e){
         this.displaymanager.current.handleAddNodeButtonPress(e)
     }
+    handleRemoveNodesButtonPress(e){
+        this.displaymanager.current.handleRemoveNodesButtonPress(e)
+    }
+    handleRemoveEdgesButtonPress(e){
+        this.displaymanager.current.handleRemoveEdgesButtonPress(e)
+    }
 
     // pass mouse up down to toolbar for drag bar
     handleMouseUp(e){
@@ -107,7 +115,9 @@ class App extends Component {
                             windowHeight={this.state.height}/>
             <Toolbar ref={this.toolbar}
                     dragCursor={this.toolbarDragCursor}
-                    handleAddNodeButtonPress={this.handleAddNodeButtonPress}/>
+                    handleAddNodeButtonPress={this.handleAddNodeButtonPress}
+                    handleRemoveNodesButtonPress={this.handleRemoveNodesButtonPress}
+                    handleRemoveEdgesButtonPress={this.handleRemoveEdgesButtonPress}/>
         </div>
         );
     }

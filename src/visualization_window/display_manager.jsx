@@ -21,6 +21,8 @@ export default class DisplayManager extends Component {
         this.setDisplayToText = this.setDisplayToText.bind(this);
 
         this.handleAddNodeButtonPress = this.handleAddNodeButtonPress.bind(this)
+        this.handleRemoveNodesButtonPress = this.handleRemoveNodesButtonPress.bind(this)
+        this.handleRemoveEdgesButtonPress = this.handleRemoveEdgesButtonPress.bind(this)
     }
 
     componentWillReceiveProps(nextProps) {
@@ -53,6 +55,16 @@ export default class DisplayManager extends Component {
     handleAddNodeButtonPress(e){
         if(this.state.display_type==="graph"){
             this.GraphDisplayRef.current.handleAddNodeButtonPress(e)
+        }
+    }
+    handleRemoveNodesButtonPress(e){
+        if(this.state.display_type==="graph"){
+            this.GraphDisplayRef.current.handleRemoveNodesButtonPress(e)
+        }
+    }
+    handleRemoveEdgesButtonPress(e){
+        if(this.state.display_type==="graph"){
+            this.GraphDisplayRef.current.handleRemoveEdgesButtonPress(e)
         }
     }
 
