@@ -26,8 +26,8 @@ class App extends Component {
 
         //toolbar
             //viewmenu
-                //graph button
-                this.handleGraphButtonPress=this.handleGraphButtonPress.bind(this)
+                //add node button
+                this.handleAddNodeButtonPress=this.handleAddNodeButtonPress.bind(this)
             //drag bar
             this.handleMouseUp=this.handleMouseUp.bind(this)
             this.handleMouseMove=this.handleMouseMove.bind(this)
@@ -67,8 +67,8 @@ class App extends Component {
 
     // receive graph button press from toolbar
     // pass down to display manager
-    handleGraphButtonPress(e){
-        this.displaymanager.current.handleGraphButtonPress(e)
+    handleAddNodeButtonPress(e){
+        this.displaymanager.current.handleAddNodeButtonPress(e)
     }
 
     // pass mouse up down to toolbar for drag bar
@@ -98,6 +98,7 @@ class App extends Component {
     render() {
         return (
         <div className="App"
+            onContextMenu={(e)=>{e.preventDefault()}}
             onMouseMove={this.handleMouseMove}
             onMouseUp={this.handleMouseUp}
             style={{cursor: this.state.cursor}}>
@@ -106,7 +107,7 @@ class App extends Component {
                             windowHeight={this.state.height}/>
             <Toolbar ref={this.toolbar}
                     dragCursor={this.toolbarDragCursor}
-                    handleGraphButtonPress={this.handleGraphButtonPress}/>
+                    handleAddNodeButtonPress={this.handleAddNodeButtonPress}/>
         </div>
         );
     }

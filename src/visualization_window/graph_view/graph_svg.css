@@ -3,7 +3,6 @@
     z-index: 4;
     height: 100%;
     width: 100%;
-    background-color: greenyellow;
 }
 
 #svg{
@@ -12,4 +11,8 @@
 
 .draggable{
     cursor: move;
+    user-select: none;
+    -webkit-user-select: none; 
+    -moz-user-select: none;
+    -ms-user-select: none;
 }

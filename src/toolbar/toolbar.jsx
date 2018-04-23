@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 
-import ViewMenu from "./viewmenu/view_menu";
+import GraphMenu from "./graph_menu/graph_menu";
 
 // import {debounce} from "throttle-debounce"
 
@@ -21,7 +21,7 @@ export default class Toolbar extends Component{
         }
         // ViewMenu
             // graph button
-            this.handleGraphButtonPress=this.handleGraphButtonPress.bind(this)
+            this.handleAddNodeButtonPress=this.handleAddNodeButtonPress.bind(this)
 
         // Drag bar
         this.handleDragMouseDown=this.handleDragMouseDown.bind(this);
@@ -31,9 +31,9 @@ export default class Toolbar extends Component{
 
     // receive button press from ViewMenu element
     // pass up to App
-    handleGraphButtonPress(e){
+    handleAddNodeButtonPress(e){
         e.preventDefault();
-        this.props.handleGraphButtonPress(e)
+        this.props.handleAddNodeButtonPress(e)
     }
 
     handleDragMouseDown(e) {
@@ -75,7 +75,7 @@ export default class Toolbar extends Component{
         <div className="ToolbarDiv" id="toolbar" style={divstyle}>
             <div id="inner">
             <Accordion id="toolbar" accordion={false} style={accordionstyle}>
-                <ViewMenu handleGraphButtonPress={this.handleGraphButtonPress}/>
+                <GraphMenu handleAddNodeButtonPress={this.handleAddNodeButtonPress}/>
             </Accordion>
             </div>
             <div id="drag" onMouseDown={this.handleDragMouseDown}/>
